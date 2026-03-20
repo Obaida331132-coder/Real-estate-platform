@@ -723,7 +723,7 @@
                                     <th>رقم الهاتف</th>
                                     <th>التفاصيل</th>
                                     <th>التحكم</th>
-                                </tr>
+                                
                             </thead>
                             <tbody id="pending-table"></tbody>
                         </table>
@@ -735,7 +735,7 @@
                     <div class="overflow-x-auto">
                         <table class="gold-table">
                             <thead>
-                                <tr>
+                                
                                     <th>الصورة</th>
                                     <th>العنوان</th>
                                     <th>النوع</th>
@@ -746,7 +746,7 @@
                                     <th>الحالة</th>
                                     <th>المشاهدات</th>
                                     <th>التحكم</th>
-                                </tr>
+                                
                             </thead>
                             <tbody id="published-table"></tbody>
                         </table>
@@ -758,7 +758,7 @@
                     <div class="overflow-x-auto">
                         <table class="gold-table">
                             <thead>
-                                <tr>
+                                
                                     <th>الصورة</th>
                                     <th>العنوان</th>
                                     <th>النوع</th>
@@ -768,7 +768,7 @@
                                     <th>رقم الهاتف</th>
                                     <th>المشاهدات</th>
                                     <th>التحكم</th>
-                                </tr>
+                                
                             </thead>
                             <tbody id="featured-table"></tbody>
                         </table>
@@ -808,19 +808,21 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
+        // إعدادات Firebase الجديدة
         const firebaseConfig = {
-            apiKey: "AIzaSyB4VIIcCcEgirKl0LmGG4NYQP28KN-pYEg",
-            authDomain: "suwayda-realestate.firebaseapp.com",
-            databaseURL: "https://suwayda-realestate-default-rtdb.firebaseio.com",
-            projectId: "suwayda-realestate",
-            storageBucket: "suwayda-realestate.firebasestorage.app",
-            messagingSenderId: "596141350674",
-            appId: "1:596141350674:web:9b347827162d1ee34c5dcb"
+            apiKey: "AIzaSyALimi_3uYNF-Ihmhbf3OoLG0Uxrfu-syk",
+            authDomain: "real-estate-platform-aa132.firebaseapp.com",
+            databaseURL: "https://real-estate-platform-aa132-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "real-estate-platform-aa132",
+            storageBucket: "real-estate-platform-aa132.firebasestorage.app",
+            messagingSenderId: "67824637017",
+            appId: "1:67824637017:web:6e5d86d283d6bf408ecd48"
         };
 
+        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const propertiesRef = ref(db, "properties");
