@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>عقارات السويداء | الذهبي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: #0a0c0f;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 30% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                        linear-gradient(145deg, #0a0c0f 0%, #1a1e24 100%);
+        }
+
+        .gold-particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: #d4af37;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: float-particle 8s infinite linear;
+            z-index: -1;
+        }
+
+        @keyframes float-particle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .gold-card {
+            background: rgba(18, 22, 28, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.8);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gold-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 30px 60px -15px #000, 0 0 30px rgba(212,175,55,0.3);
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, #d4af37 0%, #f5e7a3 50%, #b8860b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 900;
+        }
+
+        .btn-gold {
+            background: linear-gradient(145deg, #b8860b, #d4af37, #f5e7a3);
+            color: #0a0c0f;
+            font-weight: 900;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid #f5e7a3;
+            box-shadow: 0 5px 20px rgba(212,175,55,0.4);
+            transition: all 0.3s;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-gold:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px #d4af37;
+        }
+
+        .btn-outline-gold {
+            background: transparent;
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            font-weight: 900;
+            padding: 10px 22px;
+            border-radius: 50px;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-outline-gold:hover {
+            background: #d4af37;
+            color: #0a0c0f;
+            box-shadow: 0 0 20px #d4af37;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(212, 175, 55, 0.9);
+            backdrop-filter: blur(10px);
+            color: #000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #fff;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .back-button:hover {
+            transform: scale(1.1) rotate(-10deg);
+            background: #fff;
+            border-color: #d4af37;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 0.75rem;
+            display: inline-block;
+            border: 1px solid;
+        }
+
+        .status-available {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .status-sold {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .status-rented {
+            background: rgba(255, 165, 0, 0.1);
+            border-color: #ffa500;
+            color: #ffa500;
+        }
+
+        .status-pending {
+            background: rgba(255, 255, 0, 0.1);
+            border-color: #ffff00;
+            color: #ffff00;
+        }
+
+        .navbar {
+            background: rgba(10, 12, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .gold-input {
+            background: rgba(10, 12, 15, 0.9);
+            border: 1px solid #d4af37;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 15px;
+            width: 100%;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .gold-input:focus {
+            border-color: #f5e7a3;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .gold-input::placeholder {
+            color: rgba(212, 175, 55, 0.3);
+        }
+
+        .admin-panel {
+            background: rgba(10, 12, 15, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 40px;
+            padding: 30px;
+        }
+
+        .admin-sidebar {
+            background: rgba(18, 22, 28, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 30px;
+            padding: 25px;
+        }
+
+        .admin-menu-item {
+            padding: 15px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #b0b7c5;
+            position: relative;
+        }
+
+        .admin-menu-item:hover,
+        .admin-menu-item.active {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            transform: translateX(-5px);
+        }
+
+        .pending-badge {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff4444;
+            color: white;
+            border-radius: 50px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 900;
+        }
+
+        .gold-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .gold-table th {
+            text-align: right;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            font-weight: 900;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .gold-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .gold-table tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #0f1319, #1a1e24);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #d4af37;
+            margin: 10px 0;
+        }
+
+        .floating-add-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #b8860b, #d4af37);
+            color: #000;
+            padding: 16px 32px;
+            border-radius: 60px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            border: 2px solid #fff;
+            box-shadow: 0 10px 30px rgba(212,175,55,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .floating-add-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 20px 40px #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .floating-add-btn {
+                padding: 12px 24px;
+                font-size: 1rem;
+                bottom: 20px;
+            }
+            
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 1.8rem;
+            }
+            
+            .back-button {
+                top: 70px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: rgba(212,175,55,0.1);
+            border-radius: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+
+        .detail-icon {
+            width: 30px;
+            color: #d4af37;
+            font-size: 1.2rem;
+        }
+
+        .property-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .property-main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 30px;
+            border: 3px solid #d4af37;
+            margin-bottom: 20px;
+        }
+
+        .property-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .property-thumbnails img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 2px solid rgba(212,175,55,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .property-thumbnails img:hover {
+            border-color: #d4af37;
+            transform: scale(1.05);
+        }
+
+        .info-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+
+        .info-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #d4af37;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .action-buttons .btn-gold,
+        .action-buttons .btn-outline-gold {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 20px;
+            }
+            
+            .animated-bg,
+            .gold-particle,
+            .navbar,
+            .floating-add-btn,
+            .back-button,
+            .action-buttons,
+            .property-thumbnails,
+            footer {
+                display: none !important;
+            }
+            
+            .property-page {
+                max-width: 100%;
+                padding: 0;
+            }
+            
+            .property-main-image {
+                border: 2px solid #d4af37;
+                max-height: 300px;
+                object-fit: contain;
+                background: #f5f5f5;
+            }
+            
+            .info-section {
+                background: #f9f9f9;
+                border: 1px solid #d4af37;
+                color: black;
+                page-break-inside: avoid;
+            }
+            
+            .info-title {
+                color: #b8860b;
+                border-bottom: 2px solid #b8860b;
+            }
+            
+            .detail-item {
+                background: #f0f0f0;
+                border: 1px solid #d4af37;
+                color: black;
+            }
+            
+            .detail-icon {
+                color: #b8860b;
+            }
+            
+            .gold-text {
+                color: #b8860b;
+                background: none;
+                -webkit-text-fill-color: #b8860b;
+            }
+            
+            .status-badge {
+                border: 1px solid black;
+                color: black;
+            }
+            
+            h1, h2, h3 {
+                color: #b8860b;
+            }
+            
+            .property-page {
+                background: white;
+            }
+            
+            .print-header {
+                display: block;
+                text-align: center;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #b8860b;
+                padding-bottom: 20px;
+            }
+            
+            .print-footer {
+                display: block;
+                text-align: center;
+                margin-top: 50px;
+                font-size: 0.8rem;
+                color: #666;
+                border-top: 1px solid #b8860b;
+                padding-top: 20px;
+            }
+        }
+        
+        .print-header {
+            display: none;
+        }
+        
+        .print-footer {
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #d4af37;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <script>
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'gold-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+            document.body.appendChild(particle);
+        }
+    </script>
+
+    <div id="back-button" class="back-button" onclick="goBack()" style="display: none;">
+        <i class="fas fa-arrow-right"></i>
+    </div>
+
+    <div class="floating-add-btn" onclick="openUserAddPropertyModal()">
+        <i class="fas fa-plus-circle"></i>
+        <span>إضافة عقار جديد</span>
+    </div>
+
+    <nav class="navbar flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <i class="fas fa-crown text-3xl gold-text"></i>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black">
+                    <span class="gold-text">عقارات السويداء</span>
+                </h1>
+                <p class="text-xs text-[#d4af37]/70">السوق الذهبي العقاري</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="openUserView()" class="btn-outline-gold text-sm">
+                <i class="fas fa-home ml-1"></i> الرئيسية
+            </button>
+            <button onclick="openAdminPanel()" class="btn-gold text-sm">
+                <i class="fas fa-cog ml-1"></i> لوحة التحكم
+            </button>
+        </div>
+    </nav>
+
+    <div id="user-view" class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card">
+                <i class="fas fa-building text-2xl text-[#d4af37] mb-2"></i>
+                <div class="stat-number" id="total-props">0</div>
+                <div class="text-sm text-gray-400">إجمالي العقارات</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-tag text-2xl text-[#d4af37] mb-2"></i>
+                <div class="stat-number" id="for-sale">0</div>
+                <div class="text-sm text-gray-400">للبيع</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-key text-2xl text-[#d4af37] mb-2"></i>
+                <div class="stat-number" id="for-rent">0</div>
+                <div class="text-sm text-gray-400">للايجار</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle text-2xl text-[#d4af37] mb-2"></i>
+                <div class="stat-number" id="sold-out">0</div>
+                <div class="text-sm text-gray-400">مباع/مؤجر</div>
+            </div>
+        </div>
+
+        <div class="gold-card p-6 mb-8">
+            <div class="grid md:grid-cols-4 gap-4">
+                <input type="text" id="search-input" placeholder="🔍 بحث عن عقار..." class="gold-input">
+                <select id="type-filter" class="gold-input">
+                    <option value="">كل الأنواع</option>
+                    <option value="شقة">شقة</option>
+                    <option value="فيلا">فيلا</option>
+                    <option value="بيت عربي">بيت عربي</option>
+                    <option value="أرض">أرض</option>
+                    <option value="سيارة">سيارة</option>
+                    <option value="محل">محل</option>
+                </select>
+                <select id="status-filter" class="gold-input">
+                    <option value="">كل الحالات</option>
+                    <option value="للبيع">للبيع</option>
+                    <option value="للايجار">للايجار</option>
+                </select>
+                <button onclick="applyFilters()" class="btn-gold">
+                    <i class="fas fa-filter ml-1"></i> تصفية
+                </button>
+            </div>
+        </div>
+
+        <div id="properties-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <div id="property-page" class="property-page" style="display: none;"></div>
+
+    <div id="admin-view" class="container mx-auto px-4 py-8" style="display: none;">
+        <div class="grid md:grid-cols-4 gap-6">
+            <div class="admin-sidebar md:col-span-1">
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-b from-[#b8860b] to-[#d4af37] mx-auto mb-4 flex items-center justify-center border-2 border-white">
+                        <i class="fas fa-user-shield text-4xl text-black"></i>
+                    </div>
+                    <h2 class="font-black text-2xl gold-text">لوحة التحكم</h2>
+                    <p class="text-sm text-gray-400">التحكم الذهبي</p>
+                </div>
+                
+                <div class="admin-menu-item" onclick="showAdminSection('dashboard')">
+                    <i class="fas fa-chart-pie ml-3 gold-text"></i> الإحصائيات
+                </div>
+                <div class="admin-menu-item active" onclick="showAdminSection('pending')">
+                    <i class="fas fa-clock ml-3 gold-text"></i> طلبات النشر
+                    <span class="pending-badge" id="pending-count">0</span>
+                </div>
+                <div class="admin-menu-item" onclick="showAdminSection('published')">
+                    <i class="fas fa-check-circle ml-3 gold-text"></i> العقارات المنشورة
+                </div>
+                <div class="admin-menu-item" onclick="showAdminSection('featured')">
+                    <i class="fas fa-star ml-3 gold-text"></i> العقارات المميزة
+                </div>
+                <div class="admin-menu-item" onclick="showAdminSection('settings')">
+                    <i class="fas fa-cog ml-3 gold-text"></i> الإعدادات
+                </div>
+                <div class="admin-menu-item text-red-500" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt ml-3"></i> خروج
+                </div>
+            </div>
+
+            <div class="admin-panel md:col-span-3">
+                <div id="dashboard-section" class="admin-section" style="display: none;">
+                    <h2 class="text-3xl font-black gold-text mb-8">📊 الإحصائيات</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="stat-card">
+                            <i class="fas fa-clock text-2xl text-yellow-400"></i>
+                            <div class="stat-number" id="pending-stats">0</div>
+                            <div class="text-xs">بانتظار المراجعة</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle text-2xl text-green-400"></i>
+                            <div class="stat-number" id="published-stats">0</div>
+                            <div class="text-xs">منشور</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star text-2xl text-yellow-400"></i>
+                            <div class="stat-number" id="featured-stats">0</div>
+                            <div class="text-xs">مميز</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-eye text-2xl text-blue-400"></i>
+                            <div class="stat-number" id="total-views-admin">0</div>
+                            <div class="text-xs">إجمالي المشاهدات</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pending-section" class="admin-section">
+                    <h2 class="text-3xl font-black gold-text mb-8">⏳ طلبات النشر الجديدة</h2>
+                    <div class="overflow-x-auto">
+                        <table class="gold-table">
+                            <thead>
+                                <tr>
+                                    <th>الصورة</th>
+                                    <th>العنوان</th>
+                                    <th>النوع</th>
+                                    <th>المنطقة</th>
+                                    <th>السعر</th>
+                                    <th>صاحب الطلب</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>التفاصيل</th>
+                                    <th>التحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pending-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="published-section" class="admin-section" style="display: none;">
+                    <h2 class="text-3xl font-black gold-text mb-8">📋 العقارات المنشورة</h2>
+                    <div class="overflow-x-auto">
+                        <table class="gold-table">
+                            <thead>
+                                <tr>
+                                    <th>الصورة</th>
+                                    <th>العنوان</th>
+                                    <th>النوع</th>
+                                    <th>المنطقة</th>
+                                    <th>السعر</th>
+                                    <th>صاحب العقار</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>الحالة</th>
+                                    <th>المشاهدات</th>
+                                    <th>التحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody id="published-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="featured-section" class="admin-section" style="display: none;">
+                    <h2 class="text-3xl font-black gold-text mb-8">⭐ العقارات المميزة</h2>
+                    <div class="overflow-x-auto">
+                        <table class="gold-table">
+                            <thead>
+                                <tr>
+                                    <th>الصورة</th>
+                                    <th>العنوان</th>
+                                    <th>النوع</th>
+                                    <th>المنطقة</th>
+                                    <th>السعر</th>
+                                    <th>صاحب العقار</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>المشاهدات</th>
+                                    <th>التحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody id="featured-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="settings-section" class="admin-section" style="display: none;">
+                    <h2 class="text-3xl font-black gold-text mb-8">⚙️ الإعدادات</h2>
+                    <div class="gold-card p-8">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block mb-2 gold-text">كلمة السر الحالية</label>
+                                <input type="password" id="current-password" class="gold-input" value="1234" disabled>
+                            </div>
+                            <div>
+                                <label class="block mb-2 gold-text">كلمة سر جديدة</label>
+                                <input type="password" id="new-password" class="gold-input">
+                            </div>
+                            <div>
+                                <label class="block mb-2 gold-text">تأكيد كلمة السر</label>
+                                <input type="password" id="confirm-password" class="gold-input">
+                            </div>
+                            <button onclick="changePassword()" class="btn-gold w-full">تغيير كلمة السر</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-8 border-t border-[#d4af37]/20 bg-[#0a0c0f]/50 backdrop-blur-sm mt-10">
+        <p class="text-sm text-[#b0b7c5]">
+            مصمم ومبرمج 
+            <a href="#" class="gold-text font-black text-lg hover:underline decoration-[#d4af37] underline-offset-4 transition-all duration-300">Eng. Obaida Abo Hamdan</a>
+            <span class="block text-[0.6rem] text-[#d4af37]/60 mt-1 tracking-widest">© جميع الحقوق محفوظة</span>
+        </p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4VIIcCcEgirKl0LmGG4NYQP28KN-pYEg",
+            authDomain: "suwayda-realestate.firebaseapp.com",
+            databaseURL: "https://suwayda-realestate-default-rtdb.firebaseio.com",
+            projectId: "suwayda-realestate",
+            storageBucket: "suwayda-realestate.firebasestorage.app",
+            messagingSenderId: "596141350674",
+            appId: "1:596141350674:web:9b347827162d1ee34c5dcb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const propertiesRef = ref(db, "properties");
+
+        let allProperties = [];
+        let filteredProperties = [];
+        let isAdmin = false;
+        let currentView = 'grid';
+
+        onValue(propertiesRef, (snapshot) => {
+            const data = snapshot.val();
+            allProperties = [];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    allProperties.push({ id: key, ...data[key] });
+                });
+            }
+            allProperties.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+            filteredProperties = [...allProperties];
+            updateUI();
+        });
+
+        function updateUI() {
+            updateStats();
+            
+            const publishedProps = allProperties.filter(p => p.status === 'منشور');
+            filteredProperties = [...publishedProps];
+            
+            if (currentView === 'grid') {
+                document.getElementById('user-view').style.display = 'block';
+                document.getElementById('property-page').style.display = 'none';
+                renderProperties();
+            }
+            
+            if (isAdmin) {
+                renderAdminPanel();
+            }
+        }
+
+        function updateStats() {
+            const published = allProperties.filter(p => p.status === 'منشور').length;
+            const forSale = allProperties.filter(p => p.status === 'منشور' && p.listingStatus === 'للبيع').length;
+            const forRent = allProperties.filter(p => p.status === 'منشور' && p.listingStatus === 'للايجار').length;
+            const sold = allProperties.filter(p => p.status === 'منشور' && (p.condition === 'مباع' || p.condition === 'مؤجر')).length;
+            
+            document.getElementById('total-props').textContent = published;
+            document.getElementById('for-sale').textContent = forSale;
+            document.getElementById('for-rent').textContent = forRent;
+            document.getElementById('sold-out').textContent = sold;
+        }
+
+        function renderProperties() {
+            const grid = document.getElementById('properties-grid');
+            if (filteredProperties.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20"><i class="fas fa-box-open text-5xl text-[#d4af37]/50 mb-4"></i><p class="text-gray-500">لا توجد عقارات منشورة حالياً</p></div>';
+                return;
+            }
+
+            grid.innerHTML = filteredProperties.map(p => `
+                <div class="gold-card">
+                    <div class="relative">
+                        <img src="${p.images?.[0] || 'https://via.placeholder.com/400/1a1e24/d4af37?text=عقار'}" class="w-full h-48 object-cover">
+                        <span class="absolute top-3 left-3 status-badge ${p.condition === 'مباع' ? 'status-sold' : p.condition === 'مؤجر' ? 'status-rented' : 'status-available'}">
+                            ${p.condition || 'متاح'}
+                        </span>
+                        ${p.featured ? '<span class="absolute top-3 right-3 bg-[#d4af37] text-black px-3 py-1 rounded-full text-xs font-black">🏆 مميز</span>' : ''}
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[#d4af37] font-bold">${p.type || 'عقار'}</span>
+                            <span class="text-sm text-gray-400">📍 ${p.village || 'السويداء'}</span>
+                        </div>
+                        
+                        <h3 class="font-black text-xl mb-3">${p.title || 'عقار'}</h3>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${p.rooms ? `<span class="bg-black/40 px-3 py-1 rounded-full text-sm border border-[#d4af37]/30">🚪 ${p.rooms} غرف</span>` : ''}
+                            ${p.kitchens ? `<span class="bg-black/40 px-3 py-1 rounded-full text-sm border border-[#d4af37]/30">🍳 ${p.kitchens} مطابخ</span>` : ''}
+                            ${p.bathrooms ? `<span class="bg-black/40 px-3 py-1 rounded-full text-sm border border-[#d4af37]/30">🚽 ${p.bathrooms} حمام</span>` : ''}
+                            ${p.space ? `<span class="bg-black/40 px-3 py-1 rounded-full text-sm border border-[#d4af37]/30">📐 ${p.space} م²</span>` : ''}
+                            <span class="bg-black/40 px-3 py-1 rounded-full text-sm border border-[#d4af37]/30">👁️ ${p.views || 0}</span>
+                        </div>
+                        
+                        <div class="text-3xl font-black gold-text mb-4">
+                            ${Number(p.price).toLocaleString()} 
+                            <span class="text-sm text-gray-400">${p.currency || '$'}</span>
+                        </div>
+                        
+                        <button onclick="openPropertyPage('${p.id}')" class="w-full btn-outline-gold">
+                            <i class="fas fa-eye ml-1"></i> عرض التفاصيل
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openPropertyPage = (id) => {
+            const p = allProperties.find(x => x.id === id);
+            if (!p) return;
+            
+            currentView = 'single';
+            document.getElementById('user-view').style.display = 'none';
+            document.getElementById('property-page').style.display = 'block';
+            document.getElementById('back-button').style.display = 'flex';
+            
+            update(ref(db, `properties/${id}`), { views: (p.views || 0) + 1 });
+            
+            let detailsHTML = '';
+            
+            if (p.type === 'شقة') {
+                detailsHTML = `
+                    <div class="info-section">
+                        <h3 class="info-title">🏠 تفاصيل الشقة</h3>
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-layer-group detail-icon"></i> <span>الطابق: <strong>${p.floor || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-door-open detail-icon"></i> <span>عدد الغرف: <strong>${p.rooms || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-utensils detail-icon"></i> <span>المطابخ: <strong>${p.kitchens || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-toilet detail-icon"></i> <span>الحمامات: <strong>${p.bathrooms || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-car detail-icon"></i> <span>كراج: <strong>${p.parking || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tree detail-icon"></i> <span>برندة: <strong>${p.balcony || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tint detail-icon"></i> <span>خزان مي: <strong>${p.waterTank || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-ruler detail-icon"></i> <span>مساحة الشقة: <strong>${p.space || 'غير محدد'} م²</strong></span></div>
+                        </div>
+                    </div>
+                `;
+            } else if (p.type === 'فيلا') {
+                detailsHTML = `
+                    <div class="info-section">
+                        <h3 class="info-title">🏰 تفاصيل الفيلا</h3>
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-layer-group detail-icon"></i> <span>عدد الطوابق: <strong>${p.floors || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-door-open detail-icon"></i> <span>عدد الغرف: <strong>${p.rooms || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-utensils detail-icon"></i> <span>المطابخ: <strong>${p.kitchens || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-toilet detail-icon"></i> <span>الحمامات: <strong>${p.bathrooms || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-swimmer detail-icon"></i> <span>بركة سباحة: <strong>${p.pool || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-car detail-icon"></i> <span>كراج: <strong>${p.parking || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tree detail-icon"></i> <span>حديقة: <strong>${p.garden || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-ruler detail-icon"></i> <span>مساحة الفيلا: <strong>${p.space || 'غير محدد'} م²</strong></span></div>
+                        </div>
+                    </div>
+                `;
+            } else if (p.type === 'بيت عربي') {
+                detailsHTML = `
+                    <div class="info-section">
+                        <h3 class="info-title">🏡 تفاصيل البيت العربي</h3>
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-layer-group detail-icon"></i> <span>عدد الطوابق: <strong>${p.floors || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-door-open detail-icon"></i> <span>عدد الغرف: <strong>${p.rooms || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-utensils detail-icon"></i> <span>المطابخ: <strong>${p.kitchens || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-toilet detail-icon"></i> <span>الحمامات: <strong>${p.bathrooms || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-ruler detail-icon"></i> <span>مساحة العقار الكلية: <strong>${p.totalSpace || 'غير محدد'} م²</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-building detail-icon"></i> <span>مساحة العمار: <strong>${p.buildingSpace || 'غير محدد'} م²</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tint detail-icon"></i> <span>خزان أرضي: <strong>${p.groundTank || 'لا'}</strong></span></div>
+                            ${p.tankCapacity ? `<div class="detail-item"><i class="fas fa-oil-can detail-icon"></i> <span>سعة الخزان: <strong>${p.tankCapacity} برميل</strong></span></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else if (p.type === 'أرض') {
+                let landDetails = `
+                    <div class="info-section">
+                        <h3 class="info-title">🌳 تفاصيل الأرض</h3>
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-ruler detail-icon"></i> <span>المساحة: <strong>${p.space || 'غير محدد'} م²</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tag detail-icon"></i> <span>نوع الأرض: <strong>${p.landType || 'غير محدد'}</strong></span></div>
+                `;
+                
+                if (p.landType === 'زراعية') {
+                    landDetails += `<div class="detail-item"><i class="fas fa-tree detail-icon"></i> <span>مزروعة: <strong>${p.crops || 'غير محدد'}</strong></span></div>`;
+                } else if (p.landType === 'تجارية' || p.landType === 'سكنية' || p.landType === 'صناعية') {
+                    landDetails += `
+                        <div class="detail-item"><i class="fas fa-file-signature detail-icon"></i> <span>رخصة: <strong>${p.license || 'لا'}</strong></span></div>
+                        <div class="detail-item"><i class="fas fa-hard-hat detail-icon"></i> <span>محفورة: <strong>${p.excavated || 'لا'}</strong></span></div>
+                    `;
+                }
+                
+                landDetails += `</div></div>`;
+                detailsHTML = landDetails;
+            } else if (p.type === 'سيارة') {
+                detailsHTML = `
+                    <div class="info-section">
+                        <h3 class="info-title">🚗 تفاصيل السيارة</h3>
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-car detail-icon"></i> <span>النوع: <strong>${p.carType || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-calendar detail-icon"></i> <span>الموديل: <strong>${p.model || 'غير محدد'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tachometer-alt detail-icon"></i> <span>الممشى: <strong>${p.mileage || 'غير محدد'} كم</strong></span></div>
+                        </div>
+                    </div>
+                `;
+            } else if (p.type === 'محل') {
+                detailsHTML = `
+                    <div class="info-section">
+                        <h3 class="info-title">🏪 تفاصيل المحل</h3>
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-ruler detail-icon"></i> <span>المساحة: <strong>${p.space || 'غير محدد'} م²</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-utensils detail-icon"></i> <span>مطبخ: <strong>${p.kitchen || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-toilet detail-icon"></i> <span>حمام: <strong>${p.bathroom || 'لا'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-warehouse detail-icon"></i> <span>مستودع: <strong>${p.storage || 'لا'}</strong></span></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const deedHTML = `
+                <div class="info-section">
+                    <h3 class="info-title">📄 معلومات السند والملكية</h3>
+                    <div class="info-grid">
+                        <div class="detail-item"><i class="fas fa-file-contract detail-icon"></i> <span>نوع السند: <strong>${p.deedType || 'غير محدد'}</strong></span></div>
+                    </div>
+                </div>
+            `;
+            
+            const printHeader = `
+                <div class="print-header">
+                    <h1 style="color: #b8860b; font-size: 24px; margin-bottom: 10px;">عقارات السويداء - السوق الذهبي</h1>
+                    <p style="color: #666;">تقرير مفصل عن العقار - تاريخ الطباعة: ${new Date().toLocaleDateString('ar')}</p>
+                </div>
+            `;
+            
+            const printFooter = `
+                <div class="print-footer">
+                    <p>تم إنشاء هذا التقرير بواسطة منصة عقارات السويداء الذهبية</p>
+                    <p>جميع الحقوق محفوظة © ${new Date().getFullYear()}</p>
+                </div>
+            `;
+            
+            const pageHTML = `
+                <div class="property-page" id="property-print-area">
+                    ${printHeader}
+                    
+                    <h1 class="text-4xl md:text-5xl font-black gold-text mb-6 text-center">${p.title}</h1>
+                    
+                    <img src="${p.images?.[0] || 'https://via.placeholder.com/1200/1a1e24/d4af37?text=عقار'}" class="property-main-image" id="main-image">
+                    
+                    <div class="property-thumbnails">
+                        ${p.images?.map((img, index) => `
+                            <img src="${img}" onclick="document.getElementById('main-image').src='${img}'" class="thumbnail">
+                        `).join('') || ''}
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="info-grid">
+                            <div class="detail-item"><i class="fas fa-map-marker-alt detail-icon"></i> <span>المنطقة: <strong>${p.village || 'السويداء'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-tag detail-icon"></i> <span>نوع العرض: <strong>${p.listingStatus === 'للبيع' ? '🏷️ للبيع' : '🔑 للإيجار'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-circle detail-icon"></i> <span>حالة العقار: <strong>${p.condition === 'متاح' ? '🟢 متاح' : p.condition === 'مباع' ? '🔴 مباع' : '🟡 مؤجر'}</strong></span></div>
+                            <div class="detail-item"><i class="fas fa-eye detail-icon"></i> <span>عدد المشاهدات: <strong>${p.views || 0}</strong></span></div>
+                            ${p.featured ? '<div class="detail-item"><i class="fas fa-star detail-icon"></i> <span>🏆 <strong class="text-yellow-400">عقار مميز</strong></span></div>' : ''}
+                        </div>
+                    </div>
+                    
+                    ${detailsHTML}
+                    
+                    ${deedHTML}
+                    
+                    <div class="info-section text-center">
+                        <h3 class="info-title">💰 السعر</h3>
+                        <div class="text-6xl font-black gold-text">
+                            ${Number(p.price).toLocaleString()}
+                            <span class="text-2xl text-gray-400">${p.currency || '$'}</span>
+                        </div>
+                    </div>
+                    
+                    ${printFooter}
+                    
+                    <div class="action-buttons">
+                        <a href="https://wa.me/963980012441?text=${encodeURIComponent(`أهلاً، أنا مهتم بالعقار: ${p.title} في ${p.village}`)}" 
+                           class="btn-gold">
+                            <i class="fab fa-whatsapp ml-2"></i> تواصل عبر واتساب
+                        </a>
+                        
+                        <button onclick="shareProperty('${p.id}')" class="btn-outline-gold">
+                            <i class="fas fa-share-alt ml-2"></i> مشاركة العقار
+                        </button>
+                        
+                        <button onclick="downloadPropertyPDF('${p.id}')" class="btn-outline-gold">
+                            <i class="fas fa-file-pdf ml-2"></i> تحميل PDF
+                        </button>
+                        
+                        ${isAdmin ? `
+                            <button onclick="approveProperty('${p.id}')" class="btn-gold">
+                                <i class="fas fa-check ml-2"></i> نشر العقار
+                            </button>
+                            <button onclick="makeFeatured('${p.id}')" class="btn-outline-gold">
+                                <i class="fas fa-star ml-2"></i> تمييز العقار
+                            </button>
+                            <button onclick="deleteProperty('${p.id}')" class="btn-outline-gold" style="border-color:#ff4444; color:#ff4444;">
+                                <i class="fas fa-trash ml-2"></i> حذف
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('property-page').innerHTML = pageHTML;
+        };
+
+        window.shareProperty = (id) => {
+            const p = allProperties.find(x => x.id === id);
+            if (navigator.share) {
+                navigator.share({
+                    title: p.title,
+                    text: `عقار ${p.type} في ${p.village} بسعر ${p.price} ${p.currency}`,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(`${p.title} - ${p.village} - السعر: ${p.price} ${p.currency}`);
+                Swal.fire({
+                    title: 'تم النسخ',
+                    text: 'تم نسخ معلومات العقار',
+                    icon: 'success',
+                    background: '#0f1319',
+                    color: '#fff',
+                    timer: 1500
+                });
+            }
+        };
+
+        window.downloadPropertyPDF = async (id) => {
+            const p = allProperties.find(x => x.id === id);
+            
+            Swal.fire({
+                title: 'جاري إنشاء ملف PDF',
+                html: '<div class="loading-spinner"></div><p class="mt-3">الرجاء الانتظار...</p>',
+                allowOutsideClick: false,
+                background: '#0f1319',
+                color: '#fff',
+                showConfirmButton: false
+            });
+            
+            try {
+                const printElement = document.createElement('div');
+                printElement.style.padding = '40px';
+                printElement.style.background = 'white';
+                printElement.style.color = 'black';
+                printElement.style.fontFamily = 'Tajawal, Cairo, sans-serif';
+                printElement.style.direction = 'rtl';
+                
+                let detailsHTML = '';
+                
+                if (p.type === 'شقة') {
+                    detailsHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; border: 1px solid #d4af37;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">🏠 تفاصيل الشقة</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${p.floor ? `<div><strong>الطابق:</strong> ${p.floor}</div>` : ''}
+                                ${p.rooms ? `<div><strong>عدد الغرف:</strong> ${p.rooms}</div>` : ''}
+                                ${p.kitchens ? `<div><strong>المطابخ:</strong> ${p.kitchens}</div>` : ''}
+                                ${p.bathrooms ? `<div><strong>الحمامات:</strong> ${p.bathrooms}</div>` : ''}
+                                ${p.parking ? `<div><strong>كراج:</strong> ${p.parking}</div>` : ''}
+                                ${p.balcony ? `<div><strong>برندة:</strong> ${p.balcony}</div>` : ''}
+                                ${p.waterTank ? `<div><strong>خزان مي:</strong> ${p.waterTank}</div>` : ''}
+                                ${p.space ? `<div><strong>مساحة الشقة:</strong> ${p.space} م²</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (p.type === 'فيلا') {
+                    detailsHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; border: 1px solid #d4af37;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">🏰 تفاصيل الفيلا</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${p.floors ? `<div><strong>عدد الطوابق:</strong> ${p.floors}</div>` : ''}
+                                ${p.rooms ? `<div><strong>عدد الغرف:</strong> ${p.rooms}</div>` : ''}
+                                ${p.kitchens ? `<div><strong>المطابخ:</strong> ${p.kitchens}</div>` : ''}
+                                ${p.bathrooms ? `<div><strong>الحمامات:</strong> ${p.bathrooms}</div>` : ''}
+                                ${p.pool ? `<div><strong>بركة سباحة:</strong> ${p.pool}</div>` : ''}
+                                ${p.parking ? `<div><strong>كراج:</strong> ${p.parking}</div>` : ''}
+                                ${p.garden ? `<div><strong>حديقة:</strong> ${p.garden}</div>` : ''}
+                                ${p.space ? `<div><strong>مساحة الفيلا:</strong> ${p.space} م²</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (p.type === 'بيت عربي') {
+                    detailsHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; border: 1px solid #d4af37;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">🏡 تفاصيل البيت العربي</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${p.floors ? `<div><strong>عدد الطوابق:</strong> ${p.floors}</div>` : ''}
+                                ${p.rooms ? `<div><strong>عدد الغرف:</strong> ${p.rooms}</div>` : ''}
+                                ${p.kitchens ? `<div><strong>المطابخ:</strong> ${p.kitchens}</div>` : ''}
+                                ${p.bathrooms ? `<div><strong>الحمامات:</strong> ${p.bathrooms}</div>` : ''}
+                                ${p.totalSpace ? `<div><strong>مساحة العقار الكلية:</strong> ${p.totalSpace} م²</div>` : ''}
+                                ${p.buildingSpace ? `<div><strong>مساحة العمار:</strong> ${p.buildingSpace} م²</div>` : ''}
+                                ${p.groundTank ? `<div><strong>خزان أرضي:</strong> ${p.groundTank}</div>` : ''}
+                                ${p.tankCapacity ? `<div><strong>سعة الخزان:</strong> ${p.tankCapacity} برميل</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (p.type === 'أرض') {
+                    let landDetails = '';
+                    if (p.landType === 'زراعية') {
+                        landDetails = `<div><strong>مزروعة:</strong> ${p.crops || 'غير محدد'}</div>`;
+                    } else if (p.landType === 'تجارية' || p.landType === 'سكنية' || p.landType === 'صناعية') {
+                        landDetails = `
+                            <div><strong>رخصة:</strong> ${p.license || 'لا'}</div>
+                            <div><strong>محفورة:</strong> ${p.excavated || 'لا'}</div>
+                        `;
+                    }
+                    
+                    detailsHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; border: 1px solid #d4af37;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">🌳 تفاصيل الأرض</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${p.space ? `<div><strong>المساحة:</strong> ${p.space} م²</div>` : ''}
+                                ${p.landType ? `<div><strong>نوع الأرض:</strong> ${p.landType}</div>` : ''}
+                                ${landDetails}
+                            </div>
+                        </div>
+                    `;
+                } else if (p.type === 'سيارة') {
+                    detailsHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; border: 1px solid #d4af37;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">🚗 تفاصيل السيارة</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${p.carType ? `<div><strong>النوع:</strong> ${p.carType}</div>` : ''}
+                                ${p.model ? `<div><strong>الموديل:</strong> ${p.model}</div>` : ''}
+                                ${p.mileage ? `<div><strong>الممشى:</strong> ${p.mileage} كم</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else if (p.type === 'محل') {
+                    detailsHTML = `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; border: 1px solid #d4af37;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">🏪 تفاصيل المحل</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${p.space ? `<div><strong>المساحة:</strong> ${p.space} م²</div>` : ''}
+                                ${p.kitchen ? `<div><strong>مطبخ:</strong> ${p.kitchen}</div>` : ''}
+                                ${p.bathroom ? `<div><strong>حمام:</strong> ${p.bathroom}</div>` : ''}
+                                ${p.storage ? `<div><strong>مستودع:</strong> ${p.storage}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                let imagesHTML = '';
+                if (p.images && p.images.length > 0) {
+                    imagesHTML = `
+                        <div style="margin: 20px 0;">
+                            <h3 style="color: #b8860b; font-size: 20px; margin-bottom: 15px;">📸 صور العقار</h3>
+                            <div style="display: grid; grid-template-columns: repeat(${Math.min(p.images.length, 2)}, 1fr); gap: 10px;">
+                                ${p.images.slice(0, 4).map(img => `
+                                    <img src="${img}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px; border: 2px solid #d4af37;">
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                printElement.innerHTML = `
+                    <div style="max-width: 1100px; margin: 0 auto;">
+                        <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #d4af37; padding-bottom: 20px;">
+                            <h1 style="color: #b8860b; font-size: 32px; margin: 0;">عقارات السويداء</h1>
+                            <p style="color: #666; margin: 5px 0 0;">السوق الذهبي العقاري</p>
+                            <p style="color: #666;">تقرير مفصل عن العقار - تاريخ التقرير: ${new Date().toLocaleDateString('ar')}</p>
+                        </div>
+                        
+                        ${p.featured ? '<div style="text-align: center; margin-bottom: 20px;"><span style="background: #d4af37; color: #000; padding: 8px 20px; border-radius: 50px; font-weight: 900;">🏆 عقار مميز</span></div>' : ''}
+                        
+                        <h1 style="font-size: 28px; color: #b8860b; text-align: center; margin: 30px 0;">${p.title}</h1>
+                        
+                        <img src="${p.images?.[0] || 'https://via.placeholder.com/800/1a1e24/d4af37?text=عقار'}" style="width: 100%; max-height: 400px; object-fit: contain; border: 3px solid #d4af37; border-radius: 15px; margin-bottom: 30px; background: #f5f5f5;">
+                        
+                        <div style="background: #f9f9f9; border: 2px solid #d4af37; border-radius: 15px; padding: 25px; margin-bottom: 25px;">
+                            <h2 style="color: #b8860b; font-size: 22px; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">📋 معلومات أساسية</h2>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div style="padding: 10px; background: white; border-radius: 8px;"><strong>المنطقة:</strong> ${p.village || 'السويداء'}</div>
+                                <div style="padding: 10px; background: white; border-radius: 8px;"><strong>نوع العرض:</strong> ${p.listingStatus === 'للبيع' ? '🏷️ للبيع' : '🔑 للإيجار'}</div>
+                                <div style="padding: 10px; background: white; border-radius: 8px;"><strong>حالة العقار:</strong> ${p.condition || 'متاح'}</div>
+                                <div style="padding: 10px; background: white; border-radius: 8px;"><strong>عدد المشاهدات:</strong> ${p.views || 0}</div>
+                            </div>
+                        </div>
+                        
+                        ${detailsHTML}
+                        
+                        <div style="background: #f9f9f9; border: 2px solid #d4af37; border-radius: 15px; padding: 25px; margin-bottom: 25px;">
+                            <h2 style="color: #b8860b; font-size: 22px; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">📄 معلومات السند والملكية</h2>
+                            <div style="padding: 10px; background: white; border-radius: 8px;"><strong>نوع السند:</strong> ${p.deedType || 'غير محدد'}</div>
+                        </div>
+                        
+                        ${imagesHTML}
+                        
+                        <div style="text-align: center; padding: 30px; background: linear-gradient(145deg, #f9f9f9, #fff); border: 3px solid #d4af37; border-radius: 20px; margin: 30px 0;">
+                            <div style="font-size: 48px; color: #b8860b; font-weight: 900;">${Number(p.price).toLocaleString()}</div>
+                            <div style="font-size: 24px; color: #666;">${p.currency || '$'}</div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 2px solid #d4af37; color: #666; font-size: 14px;">
+                            <p>تم إنشاء هذا التقرير بواسطة منصة عقارات السويداء الذهبية</p>
+                            <p>جميع الحقوق محفوظة © ${new Date().getFullYear()}</p>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(printElement);
+                
+                const canvas = await html2canvas(printElement, {
+                    scale: 1.5,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: true,
+                    useCORS: true
+                });
+                
+                document.body.removeChild(printElement);
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'px',
+                    format: [canvas.width * 0.75, canvas.height * 0.75]
+                });
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * 0.75, canvas.height * 0.75);
+                
+                pdf.save(`${p.title.replace(/[^\w\s]/gi, '')}.pdf`);
+                
+                Swal.fire({
+                    title: 'تم التحميل',
+                    text: 'تم إنشاء ملف PDF بنجاح',
+                    icon: 'success',
+                    background: '#0f1319',
+                    color: '#fff',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
+            } catch (error) {
+                console.error('خطأ في إنشاء PDF:', error);
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'فشل في إنشاء ملف PDF',
+                    icon: 'error',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
+            }
+        };
+
+        window.goBack = () => {
+            currentView = 'grid';
+            document.getElementById('user-view').style.display = 'block';
+            document.getElementById('property-page').style.display = 'none';
+            document.getElementById('back-button').style.display = 'none';
+            renderProperties();
+        };
+
+        async function compressImageFast(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const MAX_HEIGHT = 450;
+                        
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                };
+            });
+        }
+
+        window.openUserAddPropertyModal = () => {
+            Swal.fire({
+                title: '<span class="gold-text text-2xl">إضافة عقار جديد</span>',
+                background: '#0f1319',
+                color: '#fff',
+                width: '95%',
+                html: `
+                    <div class="text-right space-y-4" style="max-height: 70vh; overflow-y: auto; padding: 10px;">
+                        <div class="bg-black/50 p-4 rounded-2xl border border-[#d4af37]/30 mb-4">
+                            <p class="text-[#d4af37] font-black mb-3">👤 معلومات التواصل (للمراجعة فقط)</p>
+                            <input type="text" id="user-name" class="gold-input mb-3" placeholder="الاسم الكامل *" required>
+                            <input type="text" id="user-phone" class="gold-input" placeholder="رقم الهاتف *" required>
+                        </div>
+                        
+                        <input type="text" id="user-title" class="gold-input" placeholder="عنوان العقار *" required>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" id="user-village" class="gold-input" placeholder="المنطقة *" required>
+                            <select id="user-type" class="gold-input" onchange="updatePropertyFields()" required>
+                                <option value="">اختر النوع *</option>
+                                <option value="شقة">شقة</option>
+                                <option value="فيلا">فيلا</option>
+                                <option value="بيت عربي">بيت عربي</option>
+                                <option value="أرض">أرض</option>
+                                <option value="سيارة">سيارة</option>
+                                <option value="محل">محل</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <select id="user-status" class="gold-input" required>
+                                <option value="">نوع العرض *</option>
+                                <option value="للبيع">للبيع</option>
+                                <option value="للايجار">للايجار</option>
+                            </select>
+                            <select id="user-currency" class="gold-input" required>
+                                <option value="">العملة *</option>
+                                <option value="$">دولار ($)</option>
+                                <option value="ل.س">ليرة سورية (ل.س)</option>
+                            </select>
+                        </div>
+                        
+                        <input type="number" id="user-price" class="gold-input" placeholder="السعر *" required min="0">
+                        
+                        <div id="dynamic-fields" class="space-y-3"></div>
+                        
+                        <select id="user-deedType" class="gold-input">
+                            <option value="">نوع السند (اختياري)</option>
+                            <option value="طابو أخضر">طابو أخضر</option>
+                            <option value="طابو أحمر">طابو أحمر</option>
+                            <option value="حجة عادية">حجة عادية</option>
+                            <option value="عقد محكمة">عقد محكمة</option>
+                            <option value="إفراغ عقاري">إفراغ عقاري</option>
+                            <option value="وصية">وصية</option>
+                            <option value="ميراث">ميراث</option>
+                            <option value="حصة سهمية">حصة سهمية</option>
+                        </select>
+                        
+                        <div class="border-2 border-dashed border-[#d4af37]/50 rounded-2xl p-6 text-center">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-[#d4af37] mb-2"></i>
+                            <p class="text-sm text-gray-400 mb-3">اختر صور العقار من جهازك</p>
+                            <input type="file" id="user-images-input" multiple accept="image/*" class="hidden" onchange="previewSelectedImages(event)">
+                            <button type="button" onclick="document.getElementById('user-images-input').click()" class="btn-outline-gold text-sm py-2 px-4">
+                                <i class="fas fa-folder-open ml-1"></i> استعراض الصور
+                            </button>
+                            <div id="image-preview-container" class="grid grid-cols-3 gap-2 mt-4"></div>
+                            
+                            <div id="upload-progress" class="hidden mt-4">
+                                <div class="flex justify-between text-xs text-[#d4af37] mb-1">
+                                    <span>جاري تجهيز الصور...</span>
+                                    <span id="progress-percent">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                                    <div id="progress-bar" class="h-full bg-gradient-to-l from-[#b8860b] to-[#d4af37]" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-2" id="progress-status">جاري التجهيز...</p>
+                            </div>
+                        </div>
+                        
+                        <p class="text-xs text-yellow-400">* العقار سيكون قيد المراجعة حتى موافقة الإدارة</p>
+                    </div>
+                `,
+                confirmButtonText: 'إرسال الطلب',
+                confirmButtonColor: '#d4af37',
+                showCancelButton: true,
+                cancelButtonText: 'إلغاء',
+                didOpen: () => {
+                    updatePropertyFields();
+                },
+                preConfirm: async () => {
+                    const requiredFields = [
+                        { id: 'user-name', name: 'الاسم' },
+                        { id: 'user-phone', name: 'رقم الهاتف' },
+                        { id: 'user-title', name: 'عنوان العقار' },
+                        { id: 'user-village', name: 'المنطقة' },
+                        { id: 'user-type', name: 'نوع العقار' },
+                        { id: 'user-status', name: 'نوع العرض' },
+                        { id: 'user-currency', name: 'العملة' },
+                        { id: 'user-price', name: 'السعر' }
+                    ];
+                    
+                    for (let field of requiredFields) {
+                        const element = document.getElementById(field.id);
+                        if (!element || !element.value) {
+                            Swal.showValidationMessage(`الرجاء إدخال ${field.name}`);
+                            return false;
+                        }
+                    }
+                    
+                    const imageFiles = document.getElementById('user-images-input').files;
+                    if (imageFiles.length === 0) {
+                        Swal.showValidationMessage('الرجاء إضافة صورة واحدة على الأقل');
+                        return false;
+                    }
+                    
+                    Swal.showLoading();
+                    
+                    const type = document.getElementById('user-type').value;
+                    
+                    document.getElementById('upload-progress').classList.remove('hidden');
+                    
+                    const images = [];
+                    const totalImages = imageFiles.length;
+                    
+                    try {
+                        const imagePromises = [];
+                        
+                        for (let i = 0; i < imageFiles.length; i++) {
+                            const file = imageFiles[i];
+                            
+                            document.getElementById('progress-status').textContent = `جاري تجهيز الصورة ${i + 1} من ${totalImages}`;
+                            
+                            const promise = compressImageFast(file).then(base64 => {
+                                const percent = Math.round(((i + 1) / totalImages) * 100);
+                                document.getElementById('progress-bar').style.width = percent + '%';
+                                document.getElementById('progress-percent').textContent = percent + '%';
+                                
+                                return base64;
+                            });
+                            
+                            imagePromises.push(promise);
+                        }
+                        
+                        const results = await Promise.all(imagePromises);
+                        images.push(...results);
+                        
+                    } catch (error) {
+                        console.error('خطأ في معالجة الصور:', error);
+                        Swal.showValidationMessage('فشل في معالجة الصور، حاول مرة أخرى');
+                        return false;
+                    }
+                    
+                    document.getElementById('upload-progress').classList.add('hidden');
+                    
+                    let propertyData = {
+                        ownerName: document.getElementById('user-name').value,
+                        ownerPhone: document.getElementById('user-phone').value,
+                        title: document.getElementById('user-title').value,
+                        village: document.getElementById('user-village').value,
+                        type: type,
+                        listingStatus: document.getElementById('user-status').value,
+                        currency: document.getElementById('user-currency').value,
+                        price: document.getElementById('user-price').value,
+                        deedType: document.getElementById('user-deedType').value || 'غير محدد',
+                        images: images,
+                        condition: 'متاح',
+                        status: 'قيد المراجعة',
+                        featured: false,
+                        timestamp: new Date().toISOString(),
+                        views: 0
+                    };
+                    
+                    if (type === 'شقة') {
+                        propertyData = {
+                            ...propertyData,
+                            floor: document.getElementById('user-floor')?.value || '',
+                            rooms: document.getElementById('user-rooms')?.value || '',
+                            kitchens: document.getElementById('user-kitchens')?.value || '',
+                            bathrooms: document.getElementById('user-bathrooms')?.value || '',
+                            parking: document.getElementById('user-parking')?.value || '',
+                            balcony: document.getElementById('user-balcony')?.value || '',
+                            waterTank: document.getElementById('user-waterTank')?.value || '',
+                            space: document.getElementById('user-space')?.value || ''
+                        };
+                    } else if (type === 'فيلا') {
+                        propertyData = {
+                            ...propertyData,
+                            floors: document.getElementById('user-floors')?.value || '',
+                            rooms: document.getElementById('user-rooms')?.value || '',
+                            kitchens: document.getElementById('user-kitchens')?.value || '',
+                            bathrooms: document.getElementById('user-bathrooms')?.value || '',
+                            pool: document.getElementById('user-pool')?.value || '',
+                            parking: document.getElementById('user-parking')?.value || '',
+                            garden: document.getElementById('user-garden')?.value || '',
+                            space: document.getElementById('user-space')?.value || ''
+                        };
+                    } else if (type === 'بيت عربي') {
+                        propertyData = {
+                            ...propertyData,
+                            floors: document.getElementById('user-floors')?.value || '',
+                            rooms: document.getElementById('user-rooms')?.value || '',
+                            kitchens: document.getElementById('user-kitchens')?.value || '',
+                            bathrooms: document.getElementById('user-bathrooms')?.value || '',
+                            totalSpace: document.getElementById('user-totalSpace')?.value || '',
+                            buildingSpace: document.getElementById('user-buildingSpace')?.value || '',
+                            groundTank: document.getElementById('user-groundTank')?.value || '',
+                            tankCapacity: document.getElementById('user-tankCapacity')?.value || ''
+                        };
+                    } else if (type === 'أرض') {
+                        propertyData = {
+                            ...propertyData,
+                            space: document.getElementById('user-space')?.value || '',
+                            landType: document.getElementById('user-landType')?.value || '',
+                            crops: document.getElementById('user-crops')?.value || '',
+                            license: document.getElementById('user-license')?.value || '',
+                            excavated: document.getElementById('user-excavated')?.value || ''
+                        };
+                    } else if (type === 'سيارة') {
+                        propertyData = {
+                            ...propertyData,
+                            carType: document.getElementById('user-carType')?.value || '',
+                            model: document.getElementById('user-model')?.value || '',
+                            mileage: document.getElementById('user-mileage')?.value || ''
+                        };
+                    } else if (type === 'محل') {
+                        propertyData = {
+                            ...propertyData,
+                            space: document.getElementById('user-space')?.value || '',
+                            kitchen: document.getElementById('user-kitchen')?.value || '',
+                            bathroom: document.getElementById('user-bathroom')?.value || '',
+                            storage: document.getElementById('user-storage')?.value || ''
+                        };
+                    }
+                    
+                    try {
+                        await push(propertiesRef, propertyData);
+                        return true;
+                    } catch (error) {
+                        console.error('خطأ في الإرسال:', error);
+                        Swal.showValidationMessage('فشل الإرسال، تحقق من اتصالك بالإنترنت وحاول مرة أخرى');
+                        return false;
+                    }
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'تم الإرسال',
+                        text: 'سيتم مراجعة طلبك من قبل الإدارة',
+                        icon: 'success',
+                        background: '#0f1319',
+                        color: '#fff',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                }
+            }).catch(error => {
+                console.log('تم إلغاء العملية');
+            });
+        };
+
+        window.previewSelectedImages = (event) => {
+            const files = event.target.files;
+            const container = document.getElementById('image-preview-container');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < Math.min(files.length, 6); i++) {
+                const file = files[i];
+                
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-full h-20 object-cover rounded-xl border-2 border-[#d4af37]';
+                    img.title = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                    container.appendChild(img);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.updatePropertyFields = () => {
+            const type = document.getElementById('user-type').value;
+            let fields = '';
+            
+            if (type === 'شقة') {
+                fields = `
+                    <input type="text" id="user-floor" class="gold-input" placeholder="الطابق (اختياري)">
+                    <input type="text" id="user-rooms" class="gold-input" placeholder="عدد الغرف (اختياري)">
+                    <input type="text" id="user-kitchens" class="gold-input" placeholder="عدد المطابخ (اختياري)">
+                    <input type="text" id="user-bathrooms" class="gold-input" placeholder="عدد الحمامات (اختياري)">
+                    <select id="user-parking" class="gold-input">
+                        <option value="">كراج (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-balcony" class="gold-input">
+                        <option value="">برندة (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-waterTank" class="gold-input">
+                        <option value="">خزان مي (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <input type="text" id="user-space" class="gold-input" placeholder="مساحة الشقة (م²) (اختياري)">
+                `;
+            } else if (type === 'فيلا') {
+                fields = `
+                    <input type="text" id="user-floors" class="gold-input" placeholder="عدد الطوابق (اختياري)">
+                    <input type="text" id="user-rooms" class="gold-input" placeholder="عدد الغرف (اختياري)">
+                    <input type="text" id="user-kitchens" class="gold-input" placeholder="عدد المطابخ (اختياري)">
+                    <input type="text" id="user-bathrooms" class="gold-input" placeholder="عدد الحمامات (اختياري)">
+                    <select id="user-pool" class="gold-input">
+                        <option value="">بركة سباحة (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-parking" class="gold-input">
+                        <option value="">كراج (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-garden" class="gold-input">
+                        <option value="">حديقة (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <input type="text" id="user-space" class="gold-input" placeholder="مساحة الفيلا (م²) (اختياري)">
+                `;
+            } else if (type === 'بيت عربي') {
+                fields = `
+                    <input type="text" id="user-floors" class="gold-input" placeholder="عدد الطوابق (اختياري)">
+                    <input type="text" id="user-rooms" class="gold-input" placeholder="عدد الغرف (اختياري)">
+                    <input type="text" id="user-kitchens" class="gold-input" placeholder="عدد المطابخ (اختياري)">
+                    <input type="text" id="user-bathrooms" class="gold-input" placeholder="عدد الحمامات (اختياري)">
+                    <input type="text" id="user-totalSpace" class="gold-input" placeholder="مساحة العقار الكلية (م²) (اختياري)">
+                    <input type="text" id="user-buildingSpace" class="gold-input" placeholder="مساحة العمار (المبني) (م²) (اختياري)">
+                    <select id="user-groundTank" class="gold-input">
+                        <option value="">خزان أرضي (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <input type="text" id="user-tankCapacity" class="gold-input" placeholder="سعة الخزان (برميل) (اختياري)">
+                `;
+            } else if (type === 'أرض') {
+                fields = `
+                    <input type="text" id="user-space" class="gold-input" placeholder="المساحة (م²) (اختياري)">
+                    <select id="user-landType" class="gold-input" onchange="updateLandFields()">
+                        <option value="">نوع الأرض (اختياري)</option>
+                        <option value="زراعية">زراعية</option>
+                        <option value="تجارية">تجارية</option>
+                        <option value="سكنية">سكنية</option>
+                        <option value="صناعية">صناعية</option>
+                    </select>
+                    <div id="land-dynamic-fields"></div>
+                `;
+            } else if (type === 'سيارة') {
+                fields = `
+                    <input type="text" id="user-carType" class="gold-input" placeholder="نوع السيارة (اختياري)">
+                    <input type="text" id="user-model" class="gold-input" placeholder="الموديل (اختياري)">
+                    <input type="text" id="user-mileage" class="gold-input" placeholder="الممشى (كم) (اختياري)">
+                `;
+            } else if (type === 'محل') {
+                fields = `
+                    <input type="text" id="user-space" class="gold-input" placeholder="المساحة (م²) (اختياري)">
+                    <select id="user-kitchen" class="gold-input">
+                        <option value="">مطبخ (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-bathroom" class="gold-input">
+                        <option value="">حمام (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-storage" class="gold-input">
+                        <option value="">مستودع (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                `;
+            }
+            
+            document.getElementById('dynamic-fields').innerHTML = fields;
+        };
+
+        window.updateLandFields = () => {
+            const landType = document.getElementById('user-landType').value;
+            let landFields = '';
+            
+            if (landType === 'زراعية') {
+                landFields = `
+                    <input type="text" id="user-crops" class="gold-input" placeholder="مزروعة (مثلاً: زيتون - تفاح) (اختياري)">
+                `;
+            } else if (landType === 'تجارية' || landType === 'سكنية' || landType === 'صناعية') {
+                landFields = `
+                    <select id="user-license" class="gold-input">
+                        <option value="">رخصة بناء (اختياري)</option>
+                        <option value="نعم">يوجد</option>
+                        <option value="لا">لا يوجد</option>
+                    </select>
+                    <select id="user-excavated" class="gold-input">
+                        <option value="">محفورة (اختياري)</option>
+                        <option value="نعم">محفورة</option>
+                        <option value="لا">غير محفورة</option>
+                    </select>
+                `;
+            }
+            
+            document.getElementById('land-dynamic-fields').innerHTML = landFields;
+        };
+
+        window.openAdminPanel = async () => {
+            const { value: password } = await Swal.fire({
+                title: 'دخول المسؤول',
+                input: 'password',
+                inputPlaceholder: 'كلمة السر',
+                background: '#0f1319',
+                color: '#fff',
+                confirmButtonColor: '#d4af37',
+                showCancelButton: true,
+                cancelButtonText: 'إلغاء',
+                confirmButtonText: 'دخول'
+            });
+            
+            if (password === '1234') {
+                isAdmin = true;
+                document.getElementById('user-view').style.display = 'none';
+                document.getElementById('property-page').style.display = 'none';
+                document.getElementById('admin-view').style.display = 'block';
+                renderAdminPanel();
+            } else if (password) {
+                Swal.fire('خطأ', 'كلمة السر غير صحيحة', 'error');
+            }
+        };
+
+        function renderAdminPanel() {
+            const pending = allProperties.filter(p => p.status === 'قيد المراجعة');
+            const published = allProperties.filter(p => p.status === 'منشور');
+            const featured = allProperties.filter(p => p.featured === true);
+            const totalViews = allProperties.reduce((sum, p) => sum + (p.views || 0), 0);
+            
+            document.getElementById('pending-count').textContent = pending.length;
+            document.getElementById('pending-stats').textContent = pending.length;
+            document.getElementById('published-stats').textContent = published.length;
+            document.getElementById('featured-stats').textContent = featured.length;
+            document.getElementById('total-views-admin').textContent = totalViews;
+            
+            document.getElementById('pending-table').innerHTML = pending.map(p => `
+                <tr>
+                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover"></td>
+                    <td>${p.title || 'بدون عنوان'}</td>
+                    <td>${p.type}</td>
+                    <td>${p.village}</td>
+                    <td class="gold-text">${Number(p.price).toLocaleString()} ${p.currency || '$'}</td>
+                    <td><span class="text-blue-400">${p.ownerName || 'غير محدد'}</span></td>
+                    <td><span class="text-green-400" dir="ltr">${p.ownerPhone || 'غير محدد'}</span></td>
+                    <td>
+                        <button onclick="openPropertyPage('${p.id}')" class="text-blue-500 hover:text-blue-400 ml-2" title="معاينة">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button onclick="approveProperty('${p.id}')" class="text-green-500 hover:text-green-400" title="نشر">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </button>
+                            <button onclick="makeFeatured('${p.id}')" class="text-yellow-500 hover:text-yellow-400" title="تمييز">
+                                <i class="fas fa-star text-xl"></i>
+                            </button>
+                            <button onclick="deleteProperty('${p.id}')" class="text-red-500 hover:text-red-400" title="حذف">
+                                <i class="fas fa-trash text-xl"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('published-table').innerHTML = published.map(p => `
+                <tr>
+                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover"></td>
+                    <td>${p.title || 'بدون عنوان'}</td>
+                    <td>${p.type}</td>
+                    <td>${p.village}</td>
+                    <td class="gold-text">${Number(p.price).toLocaleString()} ${p.currency || '$'}</td>
+                    <td><span class="text-blue-400">${p.ownerName || 'غير محدد'}</span></td>
+                    <td><span class="text-green-400" dir="ltr">${p.ownerPhone || 'غير محدد'}</span></td>
+                    <td>
+                        <select onchange="changeCondition('${p.id}', this.value)" class="bg-black/50 border border-[#d4af37]/30 rounded-lg p-1">
+                            <option value="متاح" ${p.condition === 'متاح' ? 'selected' : ''}>🟢 متاح</option>
+                            <option value="مباع" ${p.condition === 'مباع' ? 'selected' : ''}>🔴 مباع</option>
+                            <option value="مؤجر" ${p.condition === 'مؤجر' ? 'selected' : ''}>🟡 مؤجر</option>
+                        </select>
+                    </td>
+                    <td>${p.views || 0}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button onclick="openPropertyPage('${p.id}')" class="text-blue-500 hover:text-blue-400" title="معاينة">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="toggleFeatured('${p.id}')" class="text-yellow-500 hover:text-yellow-400" title="${p.featured ? 'إلغاء التميز' : 'تمييز'}">
+                                <i class="fas ${p.featured ? 'fa-star' : 'fa-star-o'}"></i>
+                            </button>
+                            <button onclick="deleteProperty('${p.id}')" class="text-red-500 hover:text-red-400" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('featured-table').innerHTML = featured.map(p => `
+                <tr>
+                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover"></td>
+                    <td>${p.title || 'بدون عنوان'}</td>
+                    <td>${p.type}</td>
+                    <td>${p.village}</td>
+                    <td class="gold-text">${Number(p.price).toLocaleString()} ${p.currency || '$'}</td>
+                    <td><span class="text-blue-400">${p.ownerName || 'غير محدد'}</span></td>
+                    <td><span class="text-green-400" dir="ltr">${p.ownerPhone || 'غير محدد'}</span></td>
+                    <td>${p.views || 0}</td>
+                    <td>
+                        <button onclick="toggleFeatured('${p.id}')" class="text-red-500 hover:text-red-400">
+                            <i class="fas fa-star"></i> إلغاء التميز
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.approveProperty = async (id) => {
+            await update(ref(db, `properties/${id}`), {
+                status: 'منشور'
+            });
+            Swal.fire({
+                title: 'تم النشر',
+                text: 'أصبح العقار ظاهراً للجميع',
+                icon: 'success',
+                background: '#0f1319',
+                color: '#fff',
+                timer: 1500
+            });
+        };
+
+        window.makeFeatured = async (id) => {
+            await update(ref(db, `properties/${id}`), {
+                featured: true,
+                status: 'منشور'
+            });
+            Swal.fire({
+                title: 'تم التمييز',
+                text: 'أصبح العقار مميزاً',
+                icon: 'success',
+                background: '#0f1319',
+                color: '#fff',
+                timer: 1500
+            });
+        };
+
+        window.changeCondition = async (id, condition) => {
+            await update(ref(db, `properties/${id}`), {
+                condition: condition
+            });
+        };
+
+        window.toggleFeatured = async (id) => {
+            const prop = allProperties.find(p => p.id === id);
+            await update(ref(db, `properties/${id}`), {
+                featured: !prop.featured
+            });
+        };
+
+        window.deleteProperty = async (id) => {
+            const result = await Swal.fire({
+                title: 'تأكيد الحذف',
+                text: 'هل أنت متأكد من حذف هذا العقار؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#d4af37',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                background: '#0f1319',
+                color: '#fff'
+            });
+            
+            if (result.isConfirmed) {
+                await remove(ref(db, `properties/${id}`));
+            }
+        };
+
+        window.openUserView = () => {
+            isAdmin = false;
+            currentView = 'grid';
+            document.getElementById('user-view').style.display = 'block';
+            document.getElementById('property-page').style.display = 'none';
+            document.getElementById('admin-view').style.display = 'none';
+            document.getElementById('back-button').style.display = 'none';
+            renderProperties();
+        };
+
+        window.logoutAdmin = () => {
+            isAdmin = false;
+            openUserView();
+        };
+
+        window.showAdminSection = (section) => {
+            document.querySelectorAll('.admin-section').forEach(el => el.style.display = 'none');
+            document.getElementById(`${section}-section`).style.display = 'block';
+            
+            document.querySelectorAll('.admin-menu-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.admin-menu-item').classList.add('active');
+        };
+
+        window.applyFilters = () => {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const type = document.getElementById('type-filter').value;
+            const status = document.getElementById('status-filter').value;
+            
+            const published = allProperties.filter(p => p.status === 'منشور');
+            filteredProperties = published.filter(p => {
+                return (!search || p.title?.toLowerCase().includes(search) || p.village?.includes(search)) &&
+                       (!type || p.type === type) &&
+                       (!status || p.listingStatus === status);
+            });
+            renderProperties();
+        };
+
+        window.changePassword = () => {
+            const newPass = document.getElementById('new-password').value;
+            const confirm = document.getElementById('confirm-password').value;
+            
+            if (newPass && newPass === confirm) {
+                localStorage.setItem('admin-password', newPass);
+                Swal.fire({
+                    title: 'تم التغيير',
+                    text: 'كلمة السر الجديدة محفوظة',
+                    icon: 'success',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
+            } else {
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'كلمة السر غير متطابقة',
+                    icon: 'error',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
+            }
+        };
+    </script>
+</body>
+</html>
