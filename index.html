@@ -713,7 +713,7 @@
                     <div class="overflow-x-auto">
                         <table class="gold-table">
                             <thead>
-                                <tr>
+                                
                                     <th>الصورة</th>
                                     <th>العنوان</th>
                                     <th>النوع</th>
@@ -726,7 +726,7 @@
                                 
                             </thead>
                             <tbody id="pending-table"></tbody>
-                        </table>
+                        
                     </div>
                 </div>
 
@@ -749,7 +749,7 @@
                                 
                             </thead>
                             <tbody id="published-table"></tbody>
-                        </table>
+                        
                     </div>
                 </div>
 
@@ -771,7 +771,7 @@
                                 
                             </thead>
                             <tbody id="featured-table"></tbody>
-                        </table>
+                        
                     </div>
                 </div>
 
@@ -780,18 +780,20 @@
                     <div class="gold-card p-8">
                         <div class="space-y-4">
                             <div>
-                                <label class="block mb-2 gold-text">كلمة السر الحالية</label>
-                                <input type="password" id="current-password" class="gold-input" value="1234" disabled>
-                            </div>
-                            <div>
-                                <label class="block mb-2 gold-text">كلمة سر جديدة</label>
-                                <input type="password" id="new-password" class="gold-input">
+                                <label class="block mb-2 gold-text">كلمة السر الجديدة</label>
+                                <input type="password" id="new-password" class="gold-input" placeholder="أدخل كلمة السر الجديدة">
                             </div>
                             <div>
                                 <label class="block mb-2 gold-text">تأكيد كلمة السر</label>
-                                <input type="password" id="confirm-password" class="gold-input">
+                                <input type="password" id="confirm-password" class="gold-input" placeholder="أعد إدخال كلمة السر">
                             </div>
-                            <button onclick="changePassword()" class="btn-gold w-full">تغيير كلمة السر</button>
+                            <button onclick="changePassword()" class="btn-gold w-full">
+                                <i class="fas fa-save ml-1"></i> تغيير كلمة السر
+                            </button>
+                            <hr class="border-[#d4af37]/20">
+                            <div class="text-center text-sm text-gray-400">
+                                <i class="fas fa-info-circle ml-1"></i> كلمة السر الحالية هي: <span id="current-pass-display" class="text-[#d4af37] font-bold">••••</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -826,6 +828,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const propertiesRef = ref(db, "properties");
+
+        // كلمة السر الافتراضية (لأول مرة)
+        const DEFAULT_PASSWORD = "1234";
+        
+        // جلب كلمة السر المخزنة أو استخدام الافتراضية
+        let ADMIN_PASSWORD = localStorage.getItem('admin_password') || DEFAULT_PASSWORD;
 
         let allProperties = [];
         let filteredProperties = [];
@@ -1827,6 +1835,9 @@
         };
 
         window.openAdminPanel = async () => {
+            // تحديث كلمة السر المخزنة قبل التحقق
+            ADMIN_PASSWORD = localStorage.getItem('admin_password') || DEFAULT_PASSWORD;
+            
             const { value: password } = await Swal.fire({
                 title: 'دخول المسؤول',
                 input: 'password',
@@ -1839,15 +1850,85 @@
                 confirmButtonText: 'دخول'
             });
             
-            if (password === '1234') {
+            if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
                 document.getElementById('user-view').style.display = 'none';
                 document.getElementById('property-page').style.display = 'none';
                 document.getElementById('admin-view').style.display = 'block';
                 renderAdminPanel();
+                // عرض كلمة السر الحالية في الإعدادات
+                document.getElementById('current-pass-display').textContent = '••••';
             } else if (password) {
-                Swal.fire('خطأ', 'كلمة السر غير صحيحة', 'error');
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'كلمة السر غير صحيحة',
+                    icon: 'error',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
             }
+        };
+
+        window.changePassword = () => {
+            const newPass = document.getElementById('new-password').value;
+            const confirm = document.getElementById('confirm-password').value;
+            
+            if (!newPass) {
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'الرجاء إدخال كلمة سر جديدة',
+                    icon: 'error',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
+                return;
+            }
+            
+            if (newPass.length < 4) {
+                Swal.fire({
+                    title: 'تنبيه',
+                    text: 'كلمة السر يجب أن تكون 4 أحرف على الأقل',
+                    icon: 'warning',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
+                return;
+            }
+            
+            if (newPass !== confirm) {
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'كلمة السر غير متطابقة',
+                    icon: 'error',
+                    background: '#0f1319',
+                    color: '#fff'
+                });
+                return;
+            }
+            
+            // حفظ كلمة السر الجديدة
+            ADMIN_PASSWORD = newPass;
+            localStorage.setItem('admin_password', newPass);
+            
+            // إعادة تعيين حالة المسؤول
+            isAdmin = false;
+            
+            Swal.fire({
+                title: 'تم التغيير',
+                text: 'تم تغيير كلمة السر بنجاح. سيتم تسجيل الخروج لإعادة الدخول.',
+                icon: 'success',
+                background: '#0f1319',
+                color: '#fff',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                // العودة للصفحة الرئيسية
+                openUserView();
+            });
+            
+            // تفريغ الحقول
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
         };
 
         function renderAdminPanel() {
@@ -2040,30 +2121,6 @@
                        (!status || p.listingStatus === status);
             });
             renderProperties();
-        };
-
-        window.changePassword = () => {
-            const newPass = document.getElementById('new-password').value;
-            const confirm = document.getElementById('confirm-password').value;
-            
-            if (newPass && newPass === confirm) {
-                localStorage.setItem('admin-password', newPass);
-                Swal.fire({
-                    title: 'تم التغيير',
-                    text: 'كلمة السر الجديدة محفوظة',
-                    icon: 'success',
-                    background: '#0f1319',
-                    color: '#fff'
-                });
-            } else {
-                Swal.fire({
-                    title: 'خطأ',
-                    text: 'كلمة السر غير متطابقة',
-                    icon: 'error',
-                    background: '#0f1319',
-                    color: '#fff'
-                });
-            }
         };
     </script>
 </body>
