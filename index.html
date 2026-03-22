@@ -792,7 +792,7 @@
                             </button>
                             <hr class="border-[#d4af37]/20">
                             <div class="text-center text-sm text-gray-400">
-                                <i class="fas fa-info-circle ml-1"></i> كلمة السر الحالية هي: <span id="current-pass-display" class="text-[#d4af37] font-bold">••••</span>
+                                <i class="fas fa-info-circle ml-1"></i> كلمة السر الافتراضية: <span class="text-[#d4af37] font-bold">obaida4444</span>
                             </div>
                         </div>
                     </div>
@@ -829,8 +829,8 @@
         const db = getDatabase(app);
         const propertiesRef = ref(db, "properties");
 
-        // كلمة السر الافتراضية (لأول مرة)
-        const DEFAULT_PASSWORD = "1234";
+        // كلمة السر الافتراضية الجديدة
+        const DEFAULT_PASSWORD = "obaida4444";
         
         // جلب كلمة السر المخزنة أو استخدام الافتراضية
         let ADMIN_PASSWORD = localStorage.getItem('admin_password') || DEFAULT_PASSWORD;
@@ -1856,7 +1856,6 @@
                 document.getElementById('property-page').style.display = 'none';
                 document.getElementById('admin-view').style.display = 'block';
                 renderAdminPanel();
-                // عرض كلمة السر الحالية في الإعدادات
                 document.getElementById('current-pass-display').textContent = '••••';
             } else if (password) {
                 Swal.fire({
@@ -1907,11 +1906,8 @@
             }
             
             // حفظ كلمة السر الجديدة
-            ADMIN_PASSWORD = newPass;
             localStorage.setItem('admin_password', newPass);
-            
-            // إعادة تعيين حالة المسؤول
-            isAdmin = false;
+            ADMIN_PASSWORD = newPass;
             
             Swal.fire({
                 title: 'تم التغيير',
@@ -1922,7 +1918,7 @@
                 timer: 2000,
                 showConfirmButton: false
             }).then(() => {
-                // العودة للصفحة الرئيسية
+                isAdmin = false;
                 openUserView();
             });
             
@@ -1945,7 +1941,7 @@
             
             document.getElementById('pending-table').innerHTML = pending.map(p => `
                 <tr>
-                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover"></td>
+                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover">\\\\(\\\)
                     <td>${p.title || 'بدون عنوان'}</td>
                     <td>${p.type}</td>
                     <td>${p.village}</td>
@@ -1970,12 +1966,12 @@
                             </button>
                         </div>
                     </td>
-                </tr>
+                
             `).join('');
             
             document.getElementById('published-table').innerHTML = published.map(p => `
                 <tr>
-                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover"></td>
+                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover">\\\\(\\\)
                     <td>${p.title || 'بدون عنوان'}</td>
                     <td>${p.type}</td>
                     <td>${p.village}</td>
@@ -2003,12 +1999,12 @@
                             </button>
                         </div>
                     </td>
-                </tr>
+                
             `).join('');
             
             document.getElementById('featured-table').innerHTML = featured.map(p => `
                 <tr>
-                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover"></td>
+                    <td><img src="${p.images?.[0] || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-lg object-cover">\\\\(\\\)
                     <td>${p.title || 'بدون عنوان'}</td>
                     <td>${p.type}</td>
                     <td>${p.village}</td>
@@ -2021,7 +2017,7 @@
                             <i class="fas fa-star"></i> إلغاء التميز
                         </button>
                     </td>
-                </tr>
+                
             `).join('');
         }
 
